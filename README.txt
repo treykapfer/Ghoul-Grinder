@@ -1,0 +1,12 @@
+//GHOUL GRINDER
+****************
+A fantasy game demo created to demonstrate our knowledge of flask routing.
+Create a new character, and begin.
+
+Contributors:
+  @3Ustin
+  @treykapfer
+  @pdavis213
+  @mwendo
+****************
+Requires flask, flask-bcrypt, and flask MySQL to run.
