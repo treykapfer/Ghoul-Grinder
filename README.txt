@@ -1,6 +1,7 @@
 //GHOUL GRINDER
 ****************
 A fantasy game demo created to demonstrate our knowledge of flask routing.
+This project was completed in a week's time.
 Create a new character, and begin.
 
 Contributors:
