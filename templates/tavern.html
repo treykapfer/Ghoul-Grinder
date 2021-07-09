@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<!---->
+<!--Working Title: Erenia in Peril-->
+<!--By Preston, TJ, Austin, and Micah-->
+<!--April 2021-->
+<!---->
+<head>
+    <!--Metadata-->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Links-->
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/paladin_pixel.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tavern.css') }}">
+    <!--Google Fonts-->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Aclonica&family=Bungee+Inline&family=Marcellus+SC&family=Reggae+One&family=Sigmar+One&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Roboto&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet"> 
+    <!--Title-->
+    <title>Ghoul Grinder</title>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>The Inn at Newport</h1>
+            <!--Change newport to flask variable that displays current area-->
+        </header>
+        <main>
+            <div class="row_wrap" id="tavern_top">
+            <!--TAVERN SCREEN-->
+                <div id="tavern">
+                    <div id="barmaid">
+                        <img src="{{ url_for('static', filename='img/bar_maid.png') }}">
+                    </div>
+                    <div id="shopkeep" style='display: none'>
+                        <!--hidden shopkeep who replaced barmaid-->
+                    </div>
+                </div>
+
+            <!--TAVERN SIDE MENU-->
+                <div class="column_wrap" id="tavern_menu">
+                    <button onclick="open_inventory()">Inventory</button>
+                    <button onclick="open_shop()">Shop</button>
+                    <a href = "/tavern/rest"><button>Rest</button></a>
+                        <div class="hr_break"></div>
+                    <a href = "/map"><button id="world_map_button">World Map</button></a>
+                </div>
+
+            <!--INVENTORY POP OUT-->
+                <div id="inventory_menu" style='display: none'>
+                    <button class='close' onclick="close_inventory()">X</button>
+                    <div id="inventory_main">
+                        <div id="combat_stats" class="inventory_row">
+                            <div id="attack_stat" class="display_box">
+                                <p>{{ player_attack }}</p>
+                            </div>
+                            <div id="defense_stat" class="display_box">
+                                <p>{{ player_defense }}</p>
+                            </div>
+                        </div>
+                        <div id="equipment_menu" class="inventory_row">
+                            <div id="armor_slot" class="display_box"><img id="chest" src="{{ url_for('static', filename='img/basic_sword.png') }}"></div>
+                            <div id="right_hand_slot" class="display_box"><img id="chest" src="{{ url_for('static', filename='img/basic_chest_armor.png') }}"></div>
+                            <div id="left_hand_slot" class="display_box"><img id="chest" src="{{ url_for('static', filename='img/basic_shield.png') }}"></div>
+                        </div>
+                        <div id="backpack_menu" class="inventory_row">
+                            {% for item in inventory %}
+                                <div class ="display_box"><img src="{{ url_for('static', filename = 'img/'+item.name) }}"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="tavern_lower_box">
+                <!--TAVERN ACTIVITY FEED-->
+                <div id="tavern_activity_feed">
+                    <ul>
+                        {% for activity in session['activities'] %}
+                            <li>{{ activity }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!--THE SHOPPE-->
+                <div id="tavern_shop" style='display: none'>
+                    <div id="tav_shop_header">
+                        <button onclick="close_shop()" class="close_button">Exit Shop</button>
+                        <p id="player_gold">{{  paladin_gold }}</p>
+                    </div>
+                    <div id="items_in_shop">
+                        <div class="item_box">
+                            <div class="display_box"><img src="{{ url_for('static', filename='img/red_potion.png') }}"></div>
+                            <p>Cost: 20 GP</p>
+                            <form action="/purchase_item" id="red_potion" method="post">
+                                <input type="hidden" name="option" value="red_potion">
+                                <input id="red_potion_button" name="red_potion" type="submit" value="Buy" class="button_box">
+                            </form>
+                        </div>
+                        <div class="item_box">
+                            <div class="display_box"><img src="{{ url_for('static', filename='img/yellow_potion.png') }}"></div>
+                            <p>Cost: 80 GP</p>
+                            <form action="/purchase_item" id="yellow_potion" method="post">
+                                <input type="hidden" name="option" value="yellow_potion">
+                                <input id="yellow_potion_button" name="yellow_potion" type="submit" value="Buy" class="button_box">
+                            </form>
+                        </div>
+                        <div class="item_box">
+                            <div class="display_box"><img src="{{ url_for('static', filename='img/green_potion.png') }}"></div>
+                            <p>Cost: 50 GP</p>
+                            <form action="/purchase_item" id="green_potion" method="post">
+                                <input type="hidden" name="option" value="green_potion">
+                                <input id="green_potion_button" name="green_potion" type="submit" value="Buy" class="button_box">
+                            </form>
+                        </div>
+                    </div>
+                    <div id="item_descriptions">
+                        <dl>
+                            <div class="potion_desc_box">
+                                <img src="{{ url_for('static', filename='img/red_potion.png') }}">
+                                <div class="descriptions">
+                                    <dt>Potion of Healing</dt>
+                                    <dd>Heals you for 10 health when consumed.</dd>
+                                </div>
+                            </div>
+                            <div class="potion_desc_box">
+                                <img src="{{ url_for('static', filename='img/yellow_potion.png') }}">
+                                <div class="descriptions">
+                                    <dt>Potion of Wrath</dt>
+                                    <dd>Grants you a +5 attack bonus for the duration of the battle.</dd>
+                                </div>
+                            </div>
+                            <div class="potion_desc_box">
+                                <img src="{{ url_for('static', filename='img/green_potion.png') }}">
+                                <div class="descriptions">
+                                    <dt>Potion of Fortitude</dt>
+                                    <dd>Grants you a +3 defense bonus for the duration of the battle.</dd>
+                                </div>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <a href="/logout"><button id="exit" class="close_button">Exit Game</button></a>
+        </footer>
+    </div>
+<!--javascript-->
+<script type="text/javascript" src="{{ url_for('static', filename='js/hidden_menus.js') }}"></script>
+</body>
+</html>

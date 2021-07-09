@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<!---->
+<!--Working Title-->
+<!--By Preston, TJ, Austin, and Micah-->
+<!--April 2021-->
+<!---->
+<head>
+    <!--Metadata-->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Links-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/combat.css') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/paladin_pixel.png') }}">
+    <!--Google Fonts-->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Aclonica&family=Bungee+Inline&family=Marcellus+SC&family=Reggae+One&family=Sigmar+One&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Roboto&display=swap" rel="stylesheet">
+    <!--Title-->
+    <title>Ghoul Grinder</title>
+</head>
+<body>
+    <div class="wrapper">
+        <main>
+            <div class="column_wrap" id="left_container">
+                <div id="combat_screen_container">
+                    <div id="combat_nav" class="menu_bar">
+                        <a href="/tavern/start"><button id="retreat">Retreat</button></a>
+                        <h3> Mt. Helm </h3>
+                        <a href = "combat/next_enemy"><button id="advance">Advance</button></a>
+                    </div>
+                    <div id="combat_screen">
+                        <!--this is an invisble html marker to try and get animations to work-->
+                        <div style="display: none"><p id="invisible_marker">1</p></div>
+                        <!--hitpoints view relative to your player/enemy view-->
+                        <!--player image swapped in on this id-->
+                        <!--hardcoded in for demo unless we add classes-->
+                        <div id="paladin_combat" class="combatant_box">
+                            <div id="player_hp" class="hp_bar_wrapper">
+                                <div id="player_hp_bar" class="hp_bar">
+                                    {% set health_percent_paladin = paladin[0]['hp']*2.5 %}
+                                    <img src="{{ url_for('static', filename='img/health_bar.png') }}" width="{{ health_percent_paladin }}px" height=12px>
+                                </div>
+                            </div>
+                            <img src="{{ url_for('static', filename='img/paladin_combat.png') }}" id="paladin_img">
+                        </div>
+                        {%if session['is_enemy_alive']%}
+                        <div class="enemy_combat">
+                            <div id="enemy_hp" class="hp_bar_wrapper">
+                                <div id="enemy_hp_bar" class="hp_bar">
+                                    {% set health_percent_enemy = enemies[0]['hp']*10 %} <!--change this to enemy-->
+                                    <img src="{{ url_for('static', filename='img/health_bar.png') }}" width="{{ health_percent_enemy }}px" height=12px>
+                                </div>
+                            </div>
+                            <img src="{{ url_for('static', filename='img/zombie_1.png') }}" id="enemy_img">
+                        </div>
+                        {% endif %}
+                        {% if session['is_enemy_alive'] == false %}
+                        <div class="enemy_combat">
+                            <img src="{{ url_for('static', filename='img/death_mound.png') }}" id="enemy_death">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="menu_bar"  id="interaction_menu">
+                    <!--these are all of our abilties-->
+                    <!--routes to one post method "player ability" that runs if checks for the id-->
+                    <!--abilities 4 and 5 are not active in demo-->
+                    <form action="/combat/attack0" id="action_1" method="post" onload="animate_basic()">
+                        <input type="hidden" name="option" value="action_1">
+                        <input id="action_1_button" name="action_1" type="submit" value="Martial Strike" class="button_box">
+                    </form>
+                    <form action="/combat/attack2" id="action_3" method="post">
+                        <input type="hidden" name="option" value="action_3">
+                        <input id="action_3_button" name="action_3" type="submit" value="Aura of Protection" class="button_box">
+                    </form>
+                    <form action="/perform_ability" id="action_2" method="post">
+                        <input type="hidden" name="option" value="action_2">
+                        <input id="action_2_button" name="action_2" type="submit" value="Divine Smite" class="button_box">
+                    </form>
+                    <form action="/perform_ability" id="action_4" method="post">
+                        <input type="hidden" name="option" value="action_4">
+                        <input id="action_4_button" name="action_4" type="submit" value="Cleansing Blade" class="button_box" class="locked">
+                    </form>
+                    <form action="/perform_ability" id="action_5" method="post">
+                        <input type="hidden" name="option" value="action_5">
+                        <input id="action_5_button" name="action_5" type="submit" value="Divine Intervention" class="button_box" class="locked">
+                    </form>
+                </div>
+                <div id="action_feed">
+                    <ul>
+                        <!--our stored combat actions need to be different than our tavern activities in session-->
+                        <!--we can call tavern activities "activities" and combat actions "actions"-->
+                        {% for action in session['actions'] %}
+                            <li> {{ action }} </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <!--column break-->
+            <div class="column_wrap" id="right_container">
+                <div id="inventory_menu">
+                    <div id="combat_stats" class="inventory_row">
+                        <div id="attack_stat" class="display_box">
+                            <p>{{ player_attack }}</p>
+                        </div>
+                        <div id="defense_stat" class="display_box">
+                            <p>{{ player_defense }}</p>
+                        </div>
+                    </div>
+                    <div id="equipment_menu" class="inventory_row">
+                        <div id="armor_slot" class="display_box"><img id="chest" src="{{ url_for('static', filename='img/basic_sword.png') }}"></div>
+                        <div id="right_hand_slot" class="display_box"><img id="chest" src="{{ url_for('static', filename='img/basic_chest_armor.png') }}"></div>
+                        <div id="left_hand_slot" class="display_box"><img id="chest" src="{{ url_for('static', filename='img/basic_shield.png') }}"></div>
+                    </div>
+                    <div id="backpack_menu" class="inventory_row">
+                        {% for item in inventory %}
+                            <form action="/use_item" method="post" class="backpack_form">
+                                <div class ="display_box">
+                                    <img src="{{ url_for('static', filename = 'img/'+item.name) }}">
+                                </div>
+                                    <input type="hidden" name="item_option" value="{{ item['name']}}">
+                                    <input type="hidden" name="item_id" value="{{ item['id']}}">
+                                    <input type="submit" value="Use" class="use_button">
+                                </form>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div id="ability_description" class="small_box">
+                    <dl>
+                        <div class="ability_desc_box">
+                            <img src="{{ url_for('static', filename='img/paladin_ability_1_icon.png') }}">
+                            <div class="descriptions">
+                                <dt>Martial Strike</dt>
+                                <dd>Basic attack that deals damage to the enemy.</dd>
+                            </div>
+                        </div>
+                        <div class="ability_desc_box">
+                            <img src="{{ url_for('static', filename='img/paladin_ability_3_icon.png') }}">
+                            <div class="descriptions">
+                                <dt>Aura of Protection</dt>
+                                <dd>Increases your defense for the duration of the battle.</dd>
+                            </div>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <a href="/logout"><button id="exit">Exit Game</button></a>
+        </footer>
+    </div>
+<!--javascript-->
+<script type="text/javascript" src="{{ url_for('static', filename='js/combat_animations.js') }}"></script>
+</body>
+</html>

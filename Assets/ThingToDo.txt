@@ -1,0 +1,135 @@
+@NavBar
+    @Home 
+        OnClick() --> @MainMenu
+    @Login
+        onClick() --> @Login
+            --> if(username == inDataBase AND password == inDataBase){
+                --> Then --> @MainMenu
+                -->Gain permissions to:
+                    @GameMenu
+                    @ProfilePage
+                }
+            --> if(session['user_id']){
+                    --> Then allow access to 
+                        @GameMenu
+                        @SettingsPage
+                }
+            --@PIPEDREAM
+                --> recieve current data from database about User.
+                    --> @Inventory
+                    --> @Items
+                    --> @upgrades
+                    --> @etc.
+    @Logout
+        if(session['user_id'] != null):
+            onClick() --> @Logout --> @MainMenu
+                --> session['user_id'] == null;
+                --> remove permissions from:
+                    @GameMenu
+                    @SettingsPage
+    @Register
+        if(session['user_id'] == null):
+            onClick() --> @Register
+                --> for user in users:
+                        if (username == user['name']):
+                            validRegistration = FALSE
+                --> INSERT validRegistration INTO database:
+        --> @PIPEDREAM
+            --> Registered people first get put to the map
+            --> Choose where they - 'spawn'
+            --> Get an intro talking to.
+
+
+@MainMenu
+    @NavBar
+        --> SEE @NavBar
+    @Play
+        Onclick() --> @GameMenu
+    @Credits
+        Onclick() --> @Credits
+
+@Credits
+    Has a series of words and images that shows them us
+        - We take an image of us each day we build the game, and show those in a slide or in tandem,
+        - We show code or functionality that didn't make the final cut.
+        - tell our story as friends making a game.
+    @MainMenu
+        onClick() --> @MainMenu
+
+@GameMenu
+    @InventoryMenu
+        @MoneyDisplay
+            OnEnemyDeath() --> gain appropriate money
+            @SEE @FightMain @imageOfEnemy OnEnemyDeath()
+        @equipted_Items
+            Onclick() --> QUEUE = SELECT (Amount of money current user has)
+                --> if (QUEUE == (item_clicked).upgrade_cost){
+                    --> QUEUE = SELECT (item_clicked)
+                    --> (item_clicked).href = upgraded href
+                    } 
+            @PIPEDREAM
+                Onhover() --> highlight(item_hovered)
+        @ProgressBar
+            (Image_of_current_location)
+            OnEnemyDeath() --> EnemyDeath#++
+                if(EnemyDeath# > numberOfEnemiesToKillToPassLevel):
+                    (Image_of_current_location) = new Image
+            @PIPEDREAM
+                OnEnemyDeath() --> progress bar scrolls.
+        @BackPackSlot
+            OnClick() --> create div onto the DOM absolute valued 'on' (BackPackSlot)
+                @use
+                    OnClick() --> item.use()
+                        changes image of current (BackPackSlot)
+                        item does what it is supposed to do.
+                @drop
+                    onClick() --> item.drop()
+                        change image of current (BackPackSlot)
+                @sell
+                    onClick() --> item.sell()
+                        change image of current (BackPackSlot)
+                        Character Money increases in number
+            @PIPEDREAM
+                Onhover() --> highlight(item_hovered)
+    @FightMain
+        @imageOfEnemy
+            OnEnemyDeath() --> (imageOfEnemy).href = null
+                --> (imageOfEnemy).href = (imageOfEnemy).randomDrop()
+                --> SEE @GameMenu@ProgressBar 
+        @backgroundImage
+            backgroundImage changes when the stage is changed
+        @healthEnemy
+            change bar by percentage of @abilities onClick --> run attack()
+        @healthPlayer 
+    @abilities
+        @FOR_EACH_ABILITY
+            onClick() --> run attack() 
+            --> GENERAL ABILITY RUN THROUGH
+                does player hit?
+                does any status effects?
+                does enemy have any damage reduction and amplification?
+                does player have any damage reduction and amplification?
+                deal appropriate amount of damage.
+            @PIPEDREAM
+                --> Give status effects to user
+        @Continue
+            OnEnemyDeath() --> removed greyed out div.
+            onClick() --> if(div != greyed out):
+                Spawn_Next_enemy()
+    @activityFeed
+        @abilities.onClick() --> print(result)
+        @abilites.Continue.onClick() --> print(result)
+        OnEnemyDeath() --> print(result)
+        @BackPackSlot.Use() --> print(result)
+        @BackPackSlot.drop() --> print(result)
+        @BackPackSlot.sell() --> print(result)
+        @InventoryMenu @equipted_Items.onClick() --> print(result)
+    @runMechanic
+        @
+
+
+
+
+
+
+
