@@ -11,3 +11,6 @@ Contributors:
   @mwendo
 ****************
 Requires flask, flask-bcrypt, and flask MySQL to run.
+This version is not compatible with mobile devices.
+****************
+
